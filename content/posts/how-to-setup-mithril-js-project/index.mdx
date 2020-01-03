@@ -1,16 +1,18 @@
 ---
 title: How to Easily Setup Mithril.js Project
 date: 2020-01-03
+excerpt: A quick guide to Mithril.js project setup.
+tags: ["animals", "Chicago", "zoos"]
 ---
-[Mithril.js](https://mithril.js.org/) is a client-side JavaScript framework for building Single Page Applications. It's verry small in size, only 9.5kb gzip, but despite that, it comes with built-in modules for routing and XHR.
+[Mithril.js](https://mithril.js.org/) is a client-side JavaScript framework for building Single Page Applications. It's very small in size, only 9.5kb gzip, but despite that, it comes with built-in modules for routing and XHR.
 
 Reading through the [documentation](https://mithril.js.org/#getting-started), you'll notice that there is no mention of a battery-included starter template. It recommends starting by importing Mithril.js from CDN. While that can be a good solution for working through a tutorial, it's not something you need if you want to start a new project in Mithril.js.
 
 If you ever used React, then you probably heard of [create-react-app](https://github.com/facebook/create-react-app), a great tool that enables us to create React apps with no build configuration. Luckily, there is a similar tool for Mithril, called [create-mithril-app](https://github.com/highmountaintea/create-mithril-app), and like CRA, it is easy to use. 
 
-I will presume you have newer versions of Node.js and npm installed on your machine.
+I will assume that you have newer versions of Node.js and npm installed on your machine.
 
-```
+```bash
 npx create-mithril-app my-new-app
 cd my-new-app
 npm i
@@ -20,6 +22,6 @@ npm run dev
 
 This will create new project in my-new-app folder, install all the necesary dependencies, and start webpack-dev-server. If you open browser to [http://localhost:8020](http://localhost:8020/) , you should see a `Hello World` screen.
 
-![create-mithril-app](./img/post-001-app.png)
+![Set up Mithril.js app](./mithril-app.png)
 
 Great, you have a new Mithril.js project set up, now go build something great!
