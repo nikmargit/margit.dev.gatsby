@@ -5,18 +5,13 @@ module.exports = {
       options: {},
     },
     "gatsby-plugin-react-helmet",
-    {
-      resolve: `gatsby-plugin-favicon`,
-      options: {
-        logo: "./content/assets/avatar.jpg",
-      },
-    },
+    "gatsby-plugin-favicon",
   ],
   // Customize your site metadata:
   siteMetadata: {
     title: `Nikola Margit's blog`,
     author: `Nikola Margit`,
-    description: `Articles and tutorials from Nikola Margit, frontend developer.`,
+    description: `Articles and tutorials from Nikola Margit, a frontend developer.`,
     social: [
       {
         name: `twitter`,

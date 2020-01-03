@@ -13,4 +13,7 @@ export default merge(defaultThemeColors, {
       primary: yellow,
     },
   },
+  prism: {
+    background: `#2F3538`,
+  },
 })
