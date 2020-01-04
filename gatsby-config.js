@@ -6,6 +6,13 @@ module.exports = {
     },
     "gatsby-plugin-react-helmet",
     "gatsby-plugin-favicon",
+    {
+      resolve: "gatsby-plugin-mdx",
+      options: {
+        gatsbyRemarkPlugins: [`gatsby-remark-images`],
+        plugins: [`gatsby-remark-images`],
+      },
+    },
   ],
   // Customize your site metadata:
   siteMetadata: {
