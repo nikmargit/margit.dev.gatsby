@@ -13,6 +13,12 @@ module.exports = {
         plugins: [`gatsby-remark-images`],
       },
     },
+    {
+      resolve: `gatsby-plugin-google-analytics`,
+      options: {
+        trackingId: "UA-155134388-1",
+      },
+    },
   ],
   // Customize your site metadata:
   siteMetadata: {
