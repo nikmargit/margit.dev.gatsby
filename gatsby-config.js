@@ -7,16 +7,23 @@ module.exports = {
     "gatsby-plugin-react-helmet",
     "gatsby-plugin-favicon",
     {
-      resolve: "gatsby-plugin-mdx",
-      options: {
-        gatsbyRemarkPlugins: [`gatsby-remark-images`],
-        plugins: [`gatsby-remark-images`],
-      },
-    },
-    {
       resolve: `gatsby-plugin-google-analytics`,
       options: {
         trackingId: "UA-155134388-1",
+      },
+    },
+    {
+      resolve: `gatsby-transformer-remark`,
+      options: {
+        plugins: [
+          {
+            resolve: `gatsby-remark-images`,
+            options: {
+              maxWidth: 590,
+            },
+          },
+          "gatsby-remark-autolink-headers",
+        ],
       },
     },
   ],
