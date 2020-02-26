@@ -1,0 +1,69 @@
+---
+title: How to use Feature Flags with React
+date: 2020-02-26
+excerpt: A step-by-step guide on how to implement feature flags in your React project.
+tags: ["react", "create-react-app", "feature flags"]
+---
+
+Feature flagging (sometimes called [feature toggling](https://stackoverflow.com/questions/7707383/what-is-a-feature-flag)) is a technique that enables toggling the features of the application on or off. It gives teams the ability to work on the feature while it's safely hidden from the users behind the feature flag. Feature flags are a key part of continuous integration where new features are frequently being deployed, but not necessarily released to users. They can be also used for A/B testing by releasing the features only to a certain group of users, a specific region or country for example.
+
+Feature flags can be used in React in a couple of ways, but we will use the [`react-feature-flags`](https://www.npmjs.com/package/react-feature-flags) library. This library is not very popular on _npm_, but I found it to be reliable and easy to use.
+
+### Flags
+
+We will need a set of flags for our app. Flags are basically an array of objects that contain two properties: the `name` of the flag, and boolean `isActive` property.
+
+```javascript
+flags = [
+  {
+    name: "developmentOnly",
+    isActive: "true",
+  },
+]
+```
+
+### Flags provider
+
+In order to make flags available throughout the app, it is necessary to use `FlagsProvider`. Flags provider is using a React context to pass the flags as a value prop. Here's how to use it in the `App` component:
+
+```javascript
+import { FlagsProvider } from "react-feature-flags"
+
+return (
+  <FlagsProvider value={flags}>
+    <App />
+  </FlagsProvider>
+)
+```
+
+### Using the flags
+
+By wrapping up the parts of the code in the `Flags` component, we can control whether it will be rendered or not. The `Flags` component receives the array of authorized flags. If one or more flags in the array are active (`isActive === true`), the children of `Flags` component will be rendered:
+
+```javascript
+import { Flags } from "react-feature-flags"
+
+return (
+  <Flags authorizedFlags={["developmentOnly"]}>
+    <h1>
+      This title will be visible only when developmentOnly flag has isActive
+      prop set to true.
+    </h1>
+  </Flags>
+)
+```
+
+### Setting the flags active depending on the environment
+
+In the previous example, we hardcoded `developmentOnly` flag to be true. It would be much better if we could show some features only in certain environments, like during the development. Turns out it's not that hard. If you are using React, then the environment variables are [embedded during the _build time_](https://create-react-app.dev/docs/adding-custom-environment-variables/). We can find out if we are in the development environment and set up `flags` accordingly by using built-in `NODE_ENV` environment variable:
+
+```javascript
+flags = [
+  {
+    name: "developmentOnly",
+    isActive: process.env.NODE_ENV === "development",
+  },
+]
+```
+
+Our `developmentOnly` flag will be true only in development mode and we can be sure that any code wrapped in it won't affect the users.
