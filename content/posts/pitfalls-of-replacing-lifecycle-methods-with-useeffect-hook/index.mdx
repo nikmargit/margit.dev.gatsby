@@ -1,0 +1,119 @@
+---
+title: The Pitfalls of Replacing the Lifecycle Methods with useEffect Hook
+date: 2020-03-19
+excerpt: Can useEffect replace all of the React lifecycle methods? Explore the most common problems and solutions.
+tags: ["react", "lifecycle methods", "useEffect"]
+---
+
+Introduction of the React Hooks completely removed the need for class components. With the help of the hooks, we can use all of the features of a class component in a functional component. That means that functional components now have state and lifecycle methods.
+
+React team [introduced](https://reactjs.org/docs/hooks-intro.html) `useEffect` hook to be used as componentDidMount, componentDidUpdate, and componentWillUnmount combined. Let's see that in practice:
+
+```javascript
+React.useEffect(() => {
+  console.log("Will this behave as a componentDidMount?")
+}, [])
+
+React.useEffect(() => {
+  console.log(
+    `We elegantly replaced the component did update, didn't we ${dependency}?`
+  )
+}, [dependency])
+
+React.useEffect(() => {
+  return () => {
+    console.log("This will run on unmount?")
+  }
+}, [])
+```
+
+This is how we replaced React class lifecycle methods with hooks! Ok, not so fast, the question marks are not there by mistake. All three use cases of `useEffect` have some caveats. Let's explore what are they and how to avoid them by starting with why useEffect(fn, []) is not the new componentDidMount.
+
+## useEffect(fn, []) is almost the new componentDidMount
+
+Consider this piece of code:
+
+```javascript
+const [clickCount, setClickCount] = React.useState(0)
+React.useEffect(() => {
+  const timeout = setTimeout(() => {
+    alert(clickCount)
+  }, 5000)
+  return () => clearTimeout(timeout)
+}, [])
+
+return (
+  <div>
+    <h1>Hello!</h1>
+    <button onClick={() => setClickCount((prevCount) => prevCount + 1)}>
+      Click me!
+    </button>
+  </div>
+)
+```
+
+When the component mounts, you have 5 seconds to click the button a couple of times. After 5 seconds passed, you may expect to see the number of times you clicked the button in the alert window. But that won't be the case, instead, you will get 0. Why is that? Well, closures. The `useEffect` captures the value of clickCount when it gets created, and the value stays in memory for 10 seconds until it gets displayed in the alert window. If we put the count in the dependency array, as your linter suggests, a new timeout would start with every new click.
+
+We can avoid all this by using the [mutable ref](https://reactjs.org/docs/hooks-reference.html#useref).
+
+```javascript
+const [clickCount, setClickCount] = React.useState(0)
+const countRef = React.useRef()
+
+React.useEffect(() => {
+  const timeout = setTimeout(() => {
+    alert(countRef.current)
+  }, 5000)
+  return () => clearTimeout(timeout)
+}, [])
+
+return (
+  <div>
+    <h1>Hello!</h1>
+    <button
+      onClick={() => {
+        countRef.current = clickCount + 1
+        setClickCount((prevCount) => prevCount + 1)
+      }}
+    >
+      Click me!
+    </button>
+  </div>
+)
+```
+
+We will get the current value of the `clickCount` 5 seconds after the mount. This use case is not that common, but it demonstrates some of the important differences between the lifecycle methods and the `useEffect` hook.
+
+Another big difference is that they run at different times. When you set the state inside the componentDidMount, it will trigger an extra render, but it will happen before the browser "paints" the screen. This way, the user won't see the flicker because the browser will display only the second render. When you do the same thing using the `useEffect` hook, the user will see that something happened since `useEffect` runs after the browser displayed the initial state.
+
+We can fix this by [using the `useLayoutEffect`](https://reactjs.org/docs/hooks-reference.html#uselayouteffect) instead of the `useEffect` hook, and the updates will be flushed synchronously before the browser has a chance to paint.
+
+## componentWillUpdate and componentWillUnmount
+
+We will talk about the componentWillUpdate in a separate article since the problem with an initial render when using `useEffect` is so common. In one of the previous examples, we showed that it's quite straightforward to replace the componentWillUnmount with `useEffect`. The following code:
+
+```javascript
+componentDidMount() {
+  window.addEventListener('mousemove', () => {})
+}
+componentWillUnmount() {
+  window.removeEventListener('mousemove', () => {})
+}
+```
+
+Translates to:
+
+```javascript
+useEffect(() => {
+  window.addEventListener("mousemove", () => {})
+  return () => {
+    window.removeEventListener("mousemove", () => {})
+  }
+}, [])
+```
+
+We add an event listener on the mount, and we return a cleanup function from the effect that will be called on the unmount phase. One thing to note, though, we still deal with closures here. So if you use some value from the state in the cleanup function, make sure you put it in the dependency array. If you want a cleanup function to run once, then you want to use the mutable refs.
+
+## Conclusion
+
+We covered some of the most common pitfalls you can encounter when using `useEffect`, especially if you are used to class components. With lifecycle methods, our focus was on time. The main takeaway here is that we need to start thinking more in terms of state, "this change of state/props should cause this effect".

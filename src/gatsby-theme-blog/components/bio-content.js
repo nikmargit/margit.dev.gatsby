@@ -7,7 +7,7 @@ import { Styled } from "theme-ui"
 
 export default () => (
   <Fragment>
-    My name is Nikola Margit, i'm a Frontend Developer @
+    My name is Nikola Margit, I'm a JavaScript Developer @
     <Styled.a href="https://mqsoft.rs/" target="_blanc">
       MQ Soft
     </Styled.a>
