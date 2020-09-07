@@ -1,0 +1,63 @@
+---
+title: Skip useEffect Hook on the First Render
+date: 2020-05-15
+excerpt: How to skip useEffect hook on the first render, and make it behave like componentDidUpdate lifecycle method?
+tags: ["react", "hooks", "useEffect"]
+---
+
+> This is the second article in _Replacing the Lifecycle Methods with useEffect Hook series_. Read the first article [here](https://www.nikolamargit.dev/pitfalls-of-replacing-lifecycle-methods-with-useeffect-hook/).
+
+Consider this class component:
+
+```javascript
+class CountInTitle extends React.Component {
+  state = {
+    count: 0,
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.count !== this.state.count) {
+      document.title = `Current count is ${this.state.count}`
+    }
+  }
+  render() {
+    return (
+      <button
+        onClick={() =>
+          this.setState((prevState) => ({ count: prevState.count + 1 }))
+        }
+      >
+        Increment
+      </button>
+    )
+  }
+}
+```
+
+It’s a simple component that updates the title of a document whenever you click on an **Increment** button. Maybe you didn’t catch it (kudos if you did), but nothing happens on the mount. Users will see the count only after the first click. Now let's try to achieve this using the functional component and `useEffect` hook. For simplicity's sake, I'll only show the code inside the `useEfect`. We will also need to [replace a class with the function](https://www.digitalocean.com/community/tutorials/five-ways-to-convert-react-class-components-to-functional-components-with-react-hooks), the rest remains unchanged.
+
+```javascript
+useEffect(() => {
+  document.title = `Current count is ${this.state.count}`
+}, [count])
+```
+
+It still works, but with one issue. It will display _"Current count is 0"_ in the title of a document as soon as the app loads. **`useEffect` will apply an effect on the initial render**, and the title of the document will be updated. This is expected behavior, but depending on your use case, this may not be something you desire. So how to prevent `useEffect` from running on the initial render?
+
+The most straightforward way is by using a boolean flag that will tell the `useEffect` if it's initial render or not. We will be using `useRef` to achieve this.
+
+```javascript
+const notInitialRender = useRef(false)
+
+useEffect(() => {
+  if (notInitialRender.current) {
+    document.title = `Current count is ${count}`
+  } else {
+    notInitialRender.current = true
+  }
+}, [count])
+```
+
+Let's break it down line by line. We create a new ref `notInitialRender` and set it to false. In the `useEffect` hook, we ask if the current value of the `notInitialRender` is true. Since it's false on the first render, we will end up in the else side and set the current value of the ref to true. Now that the current value of the `notInitialRender` is true, every subsequent change of `count` will update the document title.
+
+We could also use the value in the state instead of the ref, but that would result in an unnecessary component update. You should not keep something in the state if you don't use it for rendering. This is the perfect place for `useRef`.
