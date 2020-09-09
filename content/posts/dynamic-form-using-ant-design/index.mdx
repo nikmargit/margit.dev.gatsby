@@ -1,0 +1,94 @@
+---
+title: Create a Dynamic Form from JSON using Ant Design of React
+date: 2020-06-06
+excerpt: Dynamic rendering of components can be a very useful technique. Learn how to do it by building sign up form using Ant Design of React.
+tags: ["react", "ant design"]
+---
+
+In this tutorial, we will learn how to dynamically create forms from the JSON file. We will be using the Ant Design of React library of components. We'll keep it simple, but please refer to their great documentation if you want to learn more about their powerful `Form` component.
+
+Here's the example of a JSON object that we'll use. It has all the fields necessary for the one element of the form:
+
+```json
+{
+   component: "input",
+   label: "First Name",
+   required: true
+},
+```
+
+We'll handle the dynamic form element in a separate `FormField` component. To be able to dynamically render a component, we need an object that will map all the components we want to display.
+
+```javascript
+import { Input, Form, Checkbox } from "antd"
+
+// mapping of our components
+const componentMapping = {
+  input: Input,
+  password: Input.Password,
+  checkbox: Checkbox,
+}
+
+function FormElement({ component, label, required, name }) {
+  // dinamically select a component from componentMapping object
+  const Component = componentMapping[component]
+  return (
+    <Form.Item
+      label={label}
+      name={name}
+      rules={[{ required, message: "Field is required!" }]}
+    >
+      <Component />
+    </Form.Item>
+  )
+}
+```
+
+Our `FormElement` component receives a couple of props, but the `component` is the important one. It's basically a string that determines what component will be used from the `componentMapping` object. In our example, we mapped only three components, but you can add as many as you like. The other props can also be expanded, a custom error message or the whole rules object can be a prop. In the end, our `App.js` will look something like this:
+
+```javascript
+import React from "react"
+import { Form } from "antd"
+import FormElement from "./FormElement"
+
+function App() {
+  const components = [
+    {
+      component: "input",
+      label: "First Name",
+      required: true,
+    },
+    {
+      component: "input",
+      label: "Last Name",
+      required: true,
+    },
+    {
+      component: "input",
+      label: "Email",
+      required: true,
+    },
+    {
+      component: "password",
+      label: "Password",
+      required: true,
+    },
+    {
+      component: "checkbox",
+      label: "Stay signed in",
+      required: false,
+    },
+  ]
+  return (
+    <Form>
+      {components.map((component) => (
+        <FormElement {...component} />
+      ))}
+    </Form>
+  )
+}
+
+export default App
+```
+
+Now you can control the form by editing the JSON, and it becomes really easy to display login or any other type of form. Of course, you'll expand your component mapper whenever you add a new form element.
