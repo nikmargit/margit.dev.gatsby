@@ -1,0 +1,57 @@
+---
+title: Execute an async function inside of a map method
+date: 2020-05-27
+excerpt: The JavaScript map method is synchronous, but we will explore the way to make it work with asynchronous functions as well.
+tags: ["javascript", "map"]
+---
+
+> The [`map()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map) method **creates a new array** populated with the results of calling a provided function on every element in the calling array.
+
+`map()` is a **synchronous** higher-order function that takes a new function and applies it to every element of a given array. What will happen if we provide `map()` with an asynchronous function? Let's take a look:
+
+```javascript
+const values = ["Hello", undefined, 42]
+
+async function getValueType(value) {
+  return typeof value
+}
+
+const types = values.map(getValueType)
+
+console.log(types)
+// [Promise, Promise, Promise]
+```
+
+`getValuetype` is a simple function that returns the type of the value. We put `async` before it to make sure it will always return a [promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). In the end, we got an array of promises, no surprise there.
+
+We may be inclined to re-write our map to look like this:
+
+```javascript
+const types = values.map(async (value) => {
+  const type = await getValueType(value)
+  return type
+})
+
+console.log(types)
+// [Promise, Promise, Promise]
+```
+
+We will end up with the same array of [promises](https://web.dev/promises/). `map` does not await even if the function provided is `async`. `map()` starts off each promise in order; however, since they're run in parallel, each promise will resolve/reject as they see fit and will likely not settle (fulfill or reject) in order.
+
+To run all the promises in parallel, we will use the `Promise.all().`
+
+> The **`Promise.all()`** method takes an iterable of promises as an input, and returns a single `Promise` that resolves to an array of the results of the input promises.
+
+With all that, we can finally write a solution that can work with an asynchronous function.
+
+```javascript
+const values = ["Hello", undefined, 42]
+
+async function getValueType(value) {
+  return typeof value
+}
+
+const types = values.map(getValueType)
+
+Promise.all(types).then((resolvedTypes) => console.log(resolvedTypes))
+```
