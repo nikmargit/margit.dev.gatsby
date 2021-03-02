@@ -29,9 +29,9 @@ module.exports = {
   ],
   // Customize your site metadata:
   siteMetadata: {
-    title: `Nikola Margit's blog`,
+    title: `Nikola Margit`,
     author: `Nikola Margit`,
-    description: `Articles and tutorials from Nikola Margit, a frontend developer.`,
+    description: `I'm Nikola Margit, a full-stack JavaScript developer.`,
     social: [
       {
         name: `twitter`,

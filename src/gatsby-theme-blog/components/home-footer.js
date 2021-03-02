@@ -10,7 +10,14 @@ const Footer = ({ socialLinks }) => (
       margin: "auto",
     })}
   >
-    © {new Date().getFullYear()}, Powered by
+    <span
+      css={css({
+        transform: "translateY(3px)",
+      })}
+    >
+      ©
+    </span>{" "}
+    {new Date().getFullYear()}, Powered by
     {` `}
     <Styled.a
       href="https://www.gatsbyjs.org"
