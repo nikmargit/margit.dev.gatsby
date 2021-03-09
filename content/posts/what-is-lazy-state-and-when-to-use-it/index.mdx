@@ -1,0 +1,29 @@
+---
+title: What is Lazy State and When to Use it?
+date: 2021-02-15
+excerpt: Learn what is lazy initialization or lazy state, and when it may come in useful.
+tags: ["react", "hooks", "useState"]
+---
+React `useState` hook accepts a parameter called initial state. It's basically the value that initializes our state on the initial render and is ignored on all subsequent re-renders. Sometimes it is a primitive value like number or boolean, but sometimes it is a result of some expensive computation, maybe getting an item from local storage.
+
+```javascript
+const initialResult = expensiveComputation()
+
+const [result, setResult] = useState(initialResult)
+```
+On the face of it, it may look like there is nothing wrong with this code. After all, `expensiveComputation` function will be called only on the initial render, right? Well, not exactly. Because our function component body runs on every re-render of our component, `expensiveComputation` will also run on every re-render, even though its value is not needed anymore.
+The solution to this problem is quite simple. Instead of just providing a value, we can pass a function that returns the initial state.
+
+```javascript
+const getInitialResult = () => expensiveComputation()
+
+const [result, setResult] = useState(() => getInitialResult())
+```
+
+In our example, since the `expensiveComputation` is already a function, we could just pass a function reference, instead of calling the function itself.
+
+```javascript
+const [result, setResult] = useState(expensiveComputation)
+```
+
+This way we are making sure that React will only call the function on the initial render. This is called the lazy initialization or lazy state, and it's basically a performance optimization. Will you use it often? Probably not, but it can be a pretty useful tool to have.
