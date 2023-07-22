@@ -1,23 +1,18 @@
 {
-  "name": "gatsby-starter-blog-theme",
-  "private": true,
+  "name": "solar-satellite",
+  "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "gatsby develop",
-    "start": "npm run dev",
-    "build": "gatsby build",
-    "clean": "gatsby clean"
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
   },
   "dependencies": {
-    "gatsby": "2.17.11",
-    "gatsby-plugin-favicon": "3.1.6",
-    "gatsby-plugin-google-analytics": "2.1.31",
-    "gatsby-plugin-react-helmet": "3.1.15",
-    "gatsby-remark-autolink-headers": "2.1.23",
-    "gatsby-theme-blog": "1.1.17",
-    "gatsby-transformer-remark": "2.6.48",
-    "react": "^16.11.0",
-    "react-dom": "^16.11.0",
-    "react-helmet": "^5.2.1"
+    "@astrojs/mdx": "^0.19.7",
+    "@astrojs/rss": "^2.4.3",
+    "@astrojs/sitemap": "^2.0.1",
+    "astro": "^2.9.1"
   }
 }
